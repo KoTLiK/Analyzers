@@ -7,7 +7,7 @@
         <LangVersion>latest</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <IsPackable>true</IsPackable>
-        <NuspecFile>Analyzer.SealedClass.nuspec</NuspecFile>
+        <NuspecFile>Analyzer.SealedKeyword.nuspec</NuspecFile>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">

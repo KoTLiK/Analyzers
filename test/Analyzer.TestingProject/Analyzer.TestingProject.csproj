@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Analyzer.SealedClass" Version="0.0.0" PrivateAssets="all" />
+        <PackageReference Include="Analyzer.SealedKeyword" Version="0.0.0" PrivateAssets="all" />
     </ItemGroup>
 
 </Project>

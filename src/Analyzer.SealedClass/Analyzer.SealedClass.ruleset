@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RuleSet Name="Analyzer.SealedClass" Description="Default code analysis rules." ToolsVersion="17.0">
-    <Rules AnalyzerId="Analyzer.SealedClass" RuleNamespace="Analyzer.SealedClass">
-<!--        <Rule Id="SCA0001" Action="Warning" />-->
-<!--        <Rule Id="SCA0002" Action="Warning" />-->
-<!--        Do not know if I need this file to work with analyzer -->
-    </Rules>
-</RuleSet>

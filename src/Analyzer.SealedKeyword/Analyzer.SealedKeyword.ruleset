@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="Analyzer.SealedKeyword" Description="Default code analysis rules." ToolsVersion="17.0">
+    <Rules AnalyzerId="Analyzer.SealedKeyword" RuleNamespace="Analyzer.SealedKeyword">
+<!--        <Rule Id="SKA0001" Action="Warning" />-->
+<!--        <Rule Id="SKA0002" Action="Warning" />-->
+<!--        Do not know if I need this file to work with analyzer -->
+    </Rules>
+</RuleSet>

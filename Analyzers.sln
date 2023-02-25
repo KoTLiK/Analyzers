@@ -2,11 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FB6DABE8-B268-43A7-9C42-AAFD2FCF3473}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.SealedClass", "src\Analyzer.SealedClass\Analyzer.SealedClass.csproj", "{9C67CDD6-1F6E-4F78-B48B-3C2508B3DCAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.SealedKeyword", "src\Analyzer.SealedKeyword\Analyzer.SealedKeyword.csproj", "{9C67CDD6-1F6E-4F78-B48B-3C2508B3DCAE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{B26BD514-4D21-46A1-9BAE-84EC42240ECB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.SealedClass.Tests.Unit", "test\Analyzer.SealedClass.Tests.Unit\Analyzer.SealedClass.Tests.Unit.csproj", "{6CB3D274-AAE8-4EFD-A21A-6F6942EF2E98}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.SealedKeyword.Tests.Unit", "test\Analyzer.SealedKeyword.Tests.Unit\Analyzer.SealedKeyword.Tests.Unit.csproj", "{6CB3D274-AAE8-4EFD-A21A-6F6942EF2E98}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{4B32FC3D-B1B6-47AC-89C0-996798959698}"
 	ProjectSection(SolutionItems) = preProject

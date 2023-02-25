@@ -5,15 +5,15 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-[assembly: InternalsVisibleTo("Analyzer.SealedClass.Tests.Unit")]
+[assembly: InternalsVisibleTo("Analyzer.SealedKeyword.Tests.Unit")]
 
-namespace Analyzer.SealedClass;
+namespace Analyzer.SealedKeyword;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class SealedClassAnalyzer : DiagnosticAnalyzer
+public class SealedKeywordAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        => ImmutableArray.Create(Descriptor.SCA0001, Descriptor.SCA0002);
+        => ImmutableArray.Create(Descriptor.SKA0001, Descriptor.SKA0002);
 
     public override void Initialize(AnalysisContext context)
     {
@@ -31,10 +31,10 @@ public class SealedClassAnalyzer : DiagnosticAnalyzer
         }
 
         context.RegisterSyntaxNodeAction(
-            ctx => AnalyzeClassDeclaration<ClassDeclarationSyntax>(ctx, Descriptor.SCA0001),
+            ctx => AnalyzeClassDeclaration<ClassDeclarationSyntax>(ctx, Descriptor.SKA0001),
             SyntaxKind.ClassDeclaration);
         context.RegisterSyntaxNodeAction(
-            ctx => AnalyzeClassDeclaration<RecordDeclarationSyntax>(ctx, Descriptor.SCA0002),
+            ctx => AnalyzeClassDeclaration<RecordDeclarationSyntax>(ctx, Descriptor.SKA0002),
             SyntaxKind.RecordDeclaration);
     }
 

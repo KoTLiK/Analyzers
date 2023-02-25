@@ -2,8 +2,8 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
     <metadata>
         <version>0.0.0</version>
-        <id>Analyzer.SealedClass</id>
-        <title>Analyzer.SealedClass</title>
+        <id>Analyzer.SealedKeyword</id>
+        <title>Analyzer.SealedKeyword</title>
         <description>Classes/Records should be marked as 'sealed'</description>
         <authors>Milan Augustin</authors>
         <dependencies>
@@ -12,8 +12,8 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="bin\**\Analyzer.SealedClass.dll" target="analyzers\dotnet\cs\" exclude="**\Microsoft.CodeAnalysis.*;**\System.*" />
+        <file src="bin\**\Analyzer.SealedKeyword.dll" target="analyzers\dotnet\cs\" exclude="**\Microsoft.CodeAnalysis.*;**\System.*" />
 <!--        For now it will be commented out. I have to figure out if this is needed. -->
-<!--        <file src="Analyzer.SealedClass.ruleset" target="analyzers\dotnet\cs\" />-->
+<!--        <file src="Analyzer.SealedKeyword.ruleset" target="analyzers\dotnet\cs\" />-->
     </files>
 </package>

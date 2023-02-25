@@ -1,8 +1,8 @@
 using Microsoft.CodeAnalysis.CSharp.Testing.XUnit;
 
-namespace Analyzer.SealedClass.Tests.Unit;
+namespace Analyzer.SealedKeyword.Tests.Unit;
 
-public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnalyzer>
+public sealed class ClassTests : AnalyzerVerifier<SealedKeywordAnalyzer>
 {
     [Fact]
     public Task When_NonSealed_Then_Warning()
@@ -14,7 +14,7 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
             public class TestClass {}
             """;
 
-        var result = Diagnostic(Descriptor.SCA0001)
+        var result = Diagnostic(Descriptor.SKA0001)
             .WithSpan(2, 1, 2, 26)
             .WithArguments("TestClass");
 
@@ -32,7 +32,7 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
             public partial class TestClass {}
             """;
 
-        var result = Diagnostic(Descriptor.SCA0001)
+        var result = Diagnostic(Descriptor.SKA0001)
             .WithSpan(2, 1, 2, 34)
             .WithArguments("TestClass");
 

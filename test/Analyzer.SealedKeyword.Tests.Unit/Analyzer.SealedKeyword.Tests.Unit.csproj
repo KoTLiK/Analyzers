@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Analyzer.SealedClass\Analyzer.SealedClass.csproj" />
+      <ProjectReference Include="..\..\src\Analyzer.SealedKeyword\Analyzer.SealedKeyword.csproj" />
     </ItemGroup>
 
 </Project>
