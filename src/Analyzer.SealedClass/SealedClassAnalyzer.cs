@@ -13,36 +13,50 @@ namespace Analyzer.SealedClass;
 public class SealedClassAnalyzer : DiagnosticAnalyzer
 {
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        => ImmutableArray.Create(Descriptor.SCA0001);
+        => ImmutableArray.Create(Descriptor.SCA0001, Descriptor.SCA0002);
 
     public override void Initialize(AnalysisContext context)
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
 
-        // context.RegisterCompilationStartAction(); // Ulozit si dictionary vsetkych typov a postupne ich odstranit ak najdem nejake derived typy a potom reportovat diagnostiku
-        context.RegisterSyntaxNodeAction(AnalyzeClassDeclaration, SyntaxKind.ClassDeclaration);
+        context.RegisterCompilationStartAction(CompilationStartAnalysis);
     }
 
-    private static void AnalyzeClassDeclaration(SyntaxNodeAnalysisContext context)
+    private static void CompilationStartAnalysis(CompilationStartAnalysisContext context)
     {
-        var classDeclaration = (ClassDeclarationSyntax)context.Node;
-        var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration)!;
-        var baseList = (classDeclaration.BaseList?.Types ?? new SeparatedSyntaxList<BaseTypeSyntax>()).ToArray();
+        foreach (var syntaxTree in context.Compilation.SyntaxTrees)
+        {
+            _ = syntaxTree;
+        }
+
+        context.RegisterSyntaxNodeAction(
+            ctx => AnalyzeClassDeclaration<ClassDeclarationSyntax>(ctx, Descriptor.SCA0001),
+            SyntaxKind.ClassDeclaration);
+        context.RegisterSyntaxNodeAction(
+            ctx => AnalyzeClassDeclaration<RecordDeclarationSyntax>(ctx, Descriptor.SCA0002),
+            SyntaxKind.RecordDeclaration);
+    }
+
+    private static void AnalyzeClassDeclaration<TSyntax>(SyntaxNodeAnalysisContext context, DiagnosticDescriptor descriptor)
+        where TSyntax : TypeDeclarationSyntax
+    {
+        var classDeclaration = (TSyntax)context.Node;
+        // var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration)!;
+        // var baseList = (classDeclaration.BaseList?.Types ?? new SeparatedSyntaxList<BaseTypeSyntax>()).ToArray();
 
         foreach (var syntaxToken in classDeclaration.Modifiers)
         {
             var kind = syntaxToken.Kind();
-            switch (kind)
+            if (kind is SyntaxKind.AbstractKeyword
+                or SyntaxKind.SealedKeyword
+                or SyntaxKind.StaticKeyword)
             {
-                case SyntaxKind.AbstractKeyword:
-                case SyntaxKind.SealedKeyword:
-                case SyntaxKind.StaticKeyword:
-                    return;
+                return;
             }
         }
 
-        var diagnostic = Diagnostic.Create(Descriptor.SCA0001, classDeclaration.GetLocation(), classDeclaration.Identifier.Text);
+        var diagnostic = Diagnostic.Create(descriptor, classDeclaration.GetLocation(), classDeclaration.Identifier.Text);
         context.ReportDiagnostic(diagnostic);
     }
 }

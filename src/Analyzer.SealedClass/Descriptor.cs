@@ -12,4 +12,12 @@ internal static class Descriptor
         Constants.Category,
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor SCA0002 = new(
+        Constants.SCA0002.Id,
+        Constants.SCA0002.Title,
+        Constants.SCA0002.MessageFormat,
+        Constants.Category,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
 }

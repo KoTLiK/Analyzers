@@ -11,4 +11,11 @@ internal static class Constants
         public const string Title = "Classes should be marked as 'sealed'";
         public const string MessageFormat = "Class '{0}' should be marked as 'sealed'";
     }
+
+    public static class SCA0002
+    {
+        public const string Id = "SCA0002";
+        public const string Title = "Records should be marked as 'sealed'";
+        public const string MessageFormat = "Record '{0}' should be marked as 'sealed'";
+    }
 }

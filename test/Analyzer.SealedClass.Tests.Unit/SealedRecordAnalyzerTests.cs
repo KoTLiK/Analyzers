@@ -1,8 +1,9 @@
 using Microsoft.CodeAnalysis.CSharp.Testing.XUnit;
+using Microsoft.CodeAnalysis.Testing;
 
 namespace Analyzer.SealedClass.Tests.Unit;
 
-public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnalyzer>
+public sealed class SealedRecordAnalyzerTests : AnalyzerVerifier<SealedClassAnalyzer>
 {
     [Fact]
     public Task When_NonSealed_Then_Warning()
@@ -11,12 +12,12 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
         /* lang=csharp */
         const string source = """
             namespace TestNamespace;
-            public class TestClass {}
+            public record TestRecord;
             """;
 
-        var result = Diagnostic(Descriptor.SCA0001)
+        var result = Diagnostic(Descriptor.SCA0002)
             .WithSpan(2, 1, 2, 26)
-            .WithArguments("TestClass");
+            .WithArguments("TestRecord");
 
         // Act + Assert
         return VerifyAnalyzerAsync(source, result);
@@ -29,26 +30,26 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
         /* lang=csharp */
         const string source = """
             namespace TestNamespace;
-            public partial class TestClass {}
+            public partial record TestRecord;
             """;
 
-        var result = Diagnostic(Descriptor.SCA0001)
+        var result = Diagnostic(Descriptor.SCA0002)
             .WithSpan(2, 1, 2, 34)
-            .WithArguments("TestClass");
+            .WithArguments("TestRecord");
 
         // Act + Assert
         return VerifyAnalyzerAsync(source, result);
     }
 
     [Fact]
-    public Task When_NonSealed_AsBaseClass_Then_Warning()
+    public Task When_NonSealed_AsBaseRecord_Then_Warning()
     {
         // Arrange
         /* lang=csharp */
         const string source = """
             namespace TestNamespace;
-            public sealed class SealedClass : TestClass {}
-            public class TestClass {}
+            public sealed record SealedRecord : TestRecord;
+            public record TestRecord;
             """;
 
         // Act + Assert
@@ -62,7 +63,7 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
         /* lang=csharp */
         const string source = """
             namespace TestNamespace;
-            public abstract class TestClass {}
+            public abstract record TestRecord;
             """;
 
         // Act + Assert
@@ -76,7 +77,7 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
         /* lang=csharp */
         const string source = """
             namespace TestNamespace;
-            public sealed class TestClass {}
+            public sealed record TestRecord;
             """;
 
         // Act + Assert
@@ -90,21 +91,7 @@ public sealed class SealedClassAnalyzerTests : AnalyzerVerifier<SealedClassAnaly
         /* lang=csharp */
         const string source = """
             namespace TestNamespace;
-            public sealed partial class TestClass {}
-            """;
-
-        // Act + Assert
-        return VerifyAnalyzerAsync(source);
-    }
-
-    [Fact]
-    public Task When_Static_Then_NoWarning()
-    {
-        // Arrange
-        /* lang=csharp */
-        const string source = """
-            namespace TestNamespace;
-            public static class TestClass {}
+            public sealed partial record TestRecord;
             """;
 
         // Act + Assert
