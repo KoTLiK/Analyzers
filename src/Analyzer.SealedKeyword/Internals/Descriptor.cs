@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Analyzer.SealedKeyword;
+namespace Analyzer.SealedKeyword.Internals;
 
 // ReSharper disable file InconsistentNaming
 internal static class Descriptor

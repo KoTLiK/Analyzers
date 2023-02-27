@@ -1,5 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Analyzer.SealedKeyword.Internals;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,8 +12,15 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Analyzer.SealedKeyword;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public class SealedKeywordAnalyzer : DiagnosticAnalyzer
+public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
 {
+    private Dictionary<string, Value> Types { get; } = new();
+
+    private readonly record struct Value(
+        INamedTypeSymbol Type,
+        ICollection<TypeDeclarationSyntax> Declarations,
+        bool Reported = false);
+
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         => ImmutableArray.Create(Descriptor.SKA0001, Descriptor.SKA0002);
 
@@ -19,44 +28,108 @@ public class SealedKeywordAnalyzer : DiagnosticAnalyzer
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
-
         context.RegisterCompilationStartAction(CompilationStartAnalysis);
     }
 
-    private static void CompilationStartAnalysis(CompilationStartAnalysisContext context)
+    private void CompilationStartAnalysis(CompilationStartAnalysisContext context)
     {
+        var walker = new Walker();
         foreach (var syntaxTree in context.Compilation.SyntaxTrees)
         {
-            _ = syntaxTree;
+            // Toto bude asi najlepsia moznost.
+            // Len musim vymysliet ako ziskam namespace a nazov
+            // TypeDeclarationSyntax a BaseTypeDeclarationSyntax
+            walker.Visit(syntaxTree.GetRoot());
         }
 
-        context.RegisterSyntaxNodeAction(
-            ctx => AnalyzeClassDeclaration<ClassDeclarationSyntax>(ctx, Descriptor.SKA0001),
-            SyntaxKind.ClassDeclaration);
-        context.RegisterSyntaxNodeAction(
-            ctx => AnalyzeClassDeclaration<RecordDeclarationSyntax>(ctx, Descriptor.SKA0002),
-            SyntaxKind.RecordDeclaration);
+        // This 'SymbolAnalysis' should go away and 'AnalyzeSymbols' could stay (renamed and bit refactored)
+        context.RegisterSymbolAction(SymbolAnalysis, SymbolKind.NamedType);
+        context.RegisterCompilationEndAction(AnalyzeSymbols);
     }
 
-    private static void AnalyzeClassDeclaration<TSyntax>(SyntaxNodeAnalysisContext context, DiagnosticDescriptor descriptor)
-        where TSyntax : TypeDeclarationSyntax
+    private sealed class Walker : CSharpSyntaxWalker
     {
-        var classDeclaration = (TSyntax)context.Node;
-        // var classSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclaration)!;
-        // var baseList = (classDeclaration.BaseList?.Types ?? new SeparatedSyntaxList<BaseTypeSyntax>()).ToArray();
-
-        foreach (var syntaxToken in classDeclaration.Modifiers)
+        public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
-            var kind = syntaxToken.Kind();
-            if (kind is SyntaxKind.AbstractKeyword
-                or SyntaxKind.SealedKeyword
-                or SyntaxKind.StaticKeyword)
-            {
-                return;
-            }
+            var baseTypeSyntax = node.BaseList?.Types.FirstOrDefault()!;
+            var metadata = baseTypeSyntax?.GetLocation().MetadataModule;
+
+            // TODO Find namespace via parent recursively, but reuse the code if possible
+            var @namespace = ((node.Parent as FileScopedNamespaceDeclarationSyntax)?.Name as IdentifierNameSyntax)?.Identifier.Text;
+            var typeName = node.Identifier.Text;
+            base.VisitClassDeclaration(node);
         }
 
-        var diagnostic = Diagnostic.Create(descriptor, classDeclaration.GetLocation(), classDeclaration.Identifier.Text);
-        context.ReportDiagnostic(diagnostic);
+        public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+        {
+            base.VisitRecordDeclaration(node);
+        }
+    }
+    private void SymbolAnalysis(SymbolAnalysisContext context)
+    {
+        var type = (INamedTypeSymbol)context.Symbol;
+        if (type.TypeKind is not TypeKind.Class)
+        {
+            return;
+        }
+
+        if (type.IsAbstract || type.IsStatic || type.IsSealed)
+        {
+            return;
+        }
+
+        var key = $"{type.ContainingNamespace}.{type.Name}";
+        ref var valueOrNew = ref CollectionsMarshal
+            .GetValueRefOrAddDefault(Types, key, out var typeExists);
+
+        if (!typeExists)
+        {
+            var declarations = type.DeclaringSyntaxReferences
+                .Select(r => (TypeDeclarationSyntax)r.GetSyntax())
+                .ToArray();
+            valueOrNew = new Value(type, declarations);
+        }
+
+        if (type.BaseType is null || type.BaseType.Name == "Object")
+        {
+            return;
+        }
+
+        if (Types.ContainsKey(key))
+        {
+            Types.Remove(key);
+        }
+    }
+
+    private void AnalyzeSymbols(CompilationAnalysisContext context)
+    {
+        foreach (var (key, value) in Types)
+        {
+            var (type, declarations, reported) = value;
+            if (reported)
+            {
+                continue;
+            }
+
+            ref var valueOrNew = ref CollectionsMarshal.GetValueRefOrAddDefault(Types, key, out _);
+            valueOrNew = value with { Reported = true };
+
+            Report(context, type, declarations);
+        }
+    }
+
+    private static void Report(
+        CompilationAnalysisContext context,
+        INamedTypeSymbol type,
+        ICollection<TypeDeclarationSyntax> declarations)
+    {
+        var descriptor = type.IsRecord ? Descriptor.SKA0002 : Descriptor.SKA0001;
+
+        var diagnostics = declarations
+            .Select(declaration => Diagnostic.Create(descriptor, declaration.GetLocation(), type.Name));
+        foreach (var diagnostic in diagnostics)
+        {
+            context.ReportDiagnostic(diagnostic);
+        }
     }
 }

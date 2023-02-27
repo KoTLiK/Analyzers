@@ -1,3 +1,4 @@
+using Analyzer.SealedKeyword.Internals;
 using Microsoft.CodeAnalysis.CSharp.Testing.XUnit;
 
 namespace Analyzer.SealedKeyword.Tests.Unit;
