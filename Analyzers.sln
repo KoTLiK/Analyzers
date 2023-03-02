@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Items", "Items", "{4B32FC3D
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		NuGet.Config = NuGet.Config
+		Project.ruleset = Project.ruleset
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.TestingProject", "test\Analyzer.TestingProject\Analyzer.TestingProject.csproj", "{829B4868-71CF-4719-8C58-C8799F364A11}"
