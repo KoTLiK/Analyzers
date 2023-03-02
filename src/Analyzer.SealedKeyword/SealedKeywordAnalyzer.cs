@@ -33,13 +33,14 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
 
     private void CompilationStartAnalysis(CompilationStartAnalysisContext context)
     {
-        var walker = new Walker();
         foreach (var syntaxTree in context.Compilation.SyntaxTrees)
         {
             // Toto bude asi najlepsia moznost.
             // Len musim vymysliet ako ziskam namespace a nazov
             // TypeDeclarationSyntax a BaseTypeDeclarationSyntax
-            walker.Visit(syntaxTree.GetRoot());
+            new Walker().Visit(syntaxTree.GetRoot());
+            var typeDeclarations = syntaxTree.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>().ToArray();
+            typeDeclarations.Select(t => new Type(t, GetNamespace(t)));
         }
 
         // This 'SymbolAnalysis' should go away and 'AnalyzeSymbols' could stay (renamed and bit refactored)
@@ -47,15 +48,43 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
         context.RegisterCompilationEndAction(AnalyzeSymbols);
     }
 
+    private readonly record struct Type(
+        TypeDeclarationSyntax Declaration,
+        BaseNamespaceDeclarationSyntax Namespace,
+        bool? UsedAsBaseClass = null);
+
+    private static BaseNamespaceDeclarationSyntax GetNamespace(TypeDeclarationSyntax typeDeclaration)
+    {
+        if (typeDeclaration.FirstAncestorOrSelf<FileScopedNamespaceDeclarationSyntax>() is { } fileScopedNamespace)
+        {
+            return fileScopedNamespace;
+        }
+
+        if (typeDeclaration.FirstAncestorOrSelf<NamespaceDeclarationSyntax>() is { } @namespace)
+        {
+            return @namespace;
+        }
+
+        throw new InvalidOperationException("Top-Level TypeDeclaration?");
+    }
+
+    private static string? GetNamespaceName(BaseNamespaceDeclarationSyntax? namespaceDeclarationSyntax)
+    {
+        return (namespaceDeclarationSyntax?.Name as IdentifierNameSyntax)?.Identifier.Text;
+    }
+
     private sealed class Walker : CSharpSyntaxWalker
     {
         public override void VisitClassDeclaration(ClassDeclarationSyntax node)
         {
             var baseTypeSyntax = node.BaseList?.Types.FirstOrDefault()!;
-            var metadata = baseTypeSyntax?.GetLocation().MetadataModule;
+            var location = baseTypeSyntax?.GetLocation();
+            var baseNamespace = GetNamespaceName(baseTypeSyntax?.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>());
+            var x1 = baseTypeSyntax?.Type as QualifiedNameSyntax;
+            var left = x1?.Left;
+            var right = x1?.Right;
 
-            // TODO Find namespace via parent recursively, but reuse the code if possible
-            var @namespace = ((node.Parent as FileScopedNamespaceDeclarationSyntax)?.Name as IdentifierNameSyntax)?.Identifier.Text;
+            var nodeBaseNamespace = GetNamespaceName(node.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>());
             var typeName = node.Identifier.Text;
             base.VisitClassDeclaration(node);
         }
@@ -65,6 +94,7 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
             base.VisitRecordDeclaration(node);
         }
     }
+
     private void SymbolAnalysis(SymbolAnalysisContext context)
     {
         var type = (INamedTypeSymbol)context.Symbol;

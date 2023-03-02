@@ -1,17 +1,17 @@
-﻿namespace Analyzer.TestingProject.Classes;
+﻿namespace TestNamespace1 {
+    using TestNamespace2;
+    using X = TestNamespace2.TestClass1;
+    public sealed class SealedClass1 : X {}
+    public sealed class SealedClass2 : TestClass2 {}
+    public sealed class SealedClass3 : TestNamespace3.TestClass2 {}
+}
 
-public class NonSealed {}
+namespace TestNamespace2 {
+    public class TestClass1 {}
+    public class TestClass2 {}
+}
 
-public sealed class Sealed {}
-
-public abstract class Abstract {}
-
-public partial class NonSealedPartial {}
-
-public sealed partial class Partial {}
-
-public static class Static {}
-
-public sealed class InheritsNonSealed : SuggestAbstractOrRemoval {}
-
-public class SuggestAbstractOrRemoval {}
+namespace TestNamespace3 {
+    public sealed class TestClass1 {}
+    public class TestClass2 {}
+}

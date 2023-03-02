@@ -1,9 +1,7 @@
-using Analyzer.SealedKeyword.Internals;
-using Microsoft.CodeAnalysis.CSharp.Testing.XUnit;
-
 namespace Analyzer.SealedKeyword.Tests.Unit;
 
-public sealed class RecordTests : AnalyzerVerifier<SealedKeywordAnalyzer>
+// TODO clean up this messy unit tests
+public sealed class RecordTests : AnalyzerVerifier
 {
     [Fact]
     public Task When_NonSealed_Then_Warning()
