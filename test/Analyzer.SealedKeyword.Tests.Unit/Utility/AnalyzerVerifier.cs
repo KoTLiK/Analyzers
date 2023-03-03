@@ -6,7 +6,7 @@ namespace Analyzer.SealedKeyword.Tests.Unit.Utility;
 
 public class AnalyzerVerifier : AnalyzerVerifier<SealedKeywordAnalyzer>
 {
-    public static Task VerifyAnalyzerAsync(IEnumerable<string> sources, IEnumerable<DiagnosticResult> expected)
+    protected static Task VerifyAnalyzerAsync(IEnumerable<string> sources, params DiagnosticResult[] expected)
     {
         var test = new CSharpAnalyzerTest<SealedKeywordAnalyzer, XUnitVerifier>();
         foreach (var source in sources)

@@ -36,6 +36,7 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
                 group => group.SelectMany(g => g.Value).ToHashSet());
 
         context.RegisterSyntaxNodeAction(ctx => TypeDeclaration(ctx, types), SyntaxKind.ClassDeclaration);
+        context.RegisterSyntaxNodeAction(ctx => TypeDeclaration(ctx, types), SyntaxKind.RecordDeclaration);
     }
 
     private static void TypeDeclaration(SyntaxNodeAnalysisContext ctx, IReadOnlyDictionary<string, HashSet<string>> dictionary)
