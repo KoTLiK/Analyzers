@@ -19,6 +19,21 @@ public class ClassTests : AnalyzerVerifier
     }
 
     [Fact]
+    public Task TopLevel_NonSealed_Then_Warning()
+    {
+        /* lang=csharp */
+        const string source = """
+            public class TestClass {}
+            """;
+
+        var result = Diagnostic(Descriptor.SKA0001)
+            .WithSpan(1, 1, 1, 26)
+            .WithArguments("TestClass");
+
+        return VerifyAnalyzerAsync(source, result);
+    }
+
+    [Fact]
     public Task Sealed_Then_NoWarning()
     {
         /* lang=csharp */
@@ -43,7 +58,11 @@ public class ClassTests : AnalyzerVerifier
             }
             """;
 
-        return VerifyAnalyzerAsync(source);
+        var result = Diagnostic(Descriptor.SKA0001)
+            .WithSpan(2, 5, 2, 30)
+            .WithArguments("TestClass");
+
+        return VerifyAnalyzerAsync(source, result);
     }
 
     [Fact]
@@ -63,6 +82,10 @@ public class ClassTests : AnalyzerVerifier
             """,
         };
 
-        return VerifyAnalyzerAsync(sources, ArraySegment<DiagnosticResult>.Empty);
+        var result = Diagnostic(Descriptor.SKA0001)
+            .WithSpan(2, 5, 2, 30)
+            .WithArguments("TestClass");
+
+        return VerifyAnalyzerAsync(sources, new []{ result });
     }
 }
