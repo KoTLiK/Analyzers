@@ -4,7 +4,7 @@ namespace Analyzer.SealedKeyword.Tests.Unit;
 public sealed class RecordTests : AnalyzerVerifier
 {
     [Fact]
-    public Task When_NonSealed_Then_Warning()
+    public Task NonSealed_Then_Warning()
     {
         // Arrange
         /* lang=csharp */
@@ -22,7 +22,7 @@ public sealed class RecordTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task When_NonSealedPartial_Then_Warning()
+    public Task NonSealedPartial_Then_Warning()
     {
         // Arrange
         /* lang=csharp */
@@ -40,7 +40,7 @@ public sealed class RecordTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task When_NonSealed_AsBaseRecord_Then_Warning()
+    public Task NonSealed_AsBaseRecord_Then_Warning()
     {
         // Arrange
         /* lang=csharp */
@@ -55,7 +55,7 @@ public sealed class RecordTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task When_Abstract_Then_NoWarning()
+    public Task Abstract_Then_NoWarning()
     {
         // Arrange
         /* lang=csharp */
@@ -69,7 +69,7 @@ public sealed class RecordTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task When_Sealed_Then_NoWarning()
+    public Task Sealed_Then_NoWarning()
     {
         // Arrange
         /* lang=csharp */
@@ -83,7 +83,7 @@ public sealed class RecordTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task When_SealedPartial_Then_NoWarning()
+    public Task SealedPartial_Then_NoWarning()
     {
         // Arrange
         /* lang=csharp */
