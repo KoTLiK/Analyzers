@@ -1,4 +1,4 @@
-namespace Analyzer.SealedKeyword.Tests.Unit.Class;
+namespace Analyzer.SealedKeyword.Tests.Unit.ClassTests;
 
 public sealed class FileScoped : AnalyzerVerifier
 {
@@ -11,12 +11,12 @@ public sealed class FileScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}};
-            public class TestClass {}
+            public class Subject {}
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 1, 2, 26)
-            .WithArguments("TestClass");
+            .WithSpan(2, 1, 2, 24)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -30,7 +30,7 @@ public sealed class FileScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}};
-            public sealed class TestClass {}
+            public sealed class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);
@@ -45,12 +45,12 @@ public sealed class FileScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}};
-            public partial class TestClass {}
+            public partial class Subject {}
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 1, 2, 34)
-            .WithArguments("TestClass");
+            .WithSpan(2, 1, 2, 32)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -64,7 +64,7 @@ public sealed class FileScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}};
-            public sealed partial class TestClass {}
+            public sealed partial class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);
@@ -79,7 +79,7 @@ public sealed class FileScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}};
-            public static class TestClass {}
+            public static class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);
@@ -94,7 +94,7 @@ public sealed class FileScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}};
-            public abstract class TestClass {}
+            public abstract class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);

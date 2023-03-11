@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.Testing.Verifiers;
 
 namespace Analyzer.SealedKeyword.Tests.Unit.Utility;
 
-public class AnalyzerVerifier : AnalyzerVerifier<SealedKeywordAnalyzer>
+public abstract class AnalyzerVerifier : AnalyzerVerifier<SealedKeywordAnalyzer>
 {
     protected static Task VerifyAnalyzerAsync(IEnumerable<string> sources, params DiagnosticResult[] expected)
     {

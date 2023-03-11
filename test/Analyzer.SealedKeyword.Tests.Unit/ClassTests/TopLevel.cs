@@ -1,18 +1,18 @@
-﻿namespace Analyzer.SealedKeyword.Tests.Unit.Class;
+﻿namespace Analyzer.SealedKeyword.Tests.Unit.ClassTests;
 
-public class TopLevel : AnalyzerVerifier
+public sealed class TopLevel : AnalyzerVerifier
 {
     [Fact]
     public Task NonSealed_Then_Warning()
     {
         /* lang=csharp */
         const string source = """
-            public class TestClass {}
+            public class Subject {}
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(1, 1, 1, 26)
-            .WithArguments("TestClass");
+            .WithSpan(1, 1, 1, 24)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -22,7 +22,7 @@ public class TopLevel : AnalyzerVerifier
     {
         /* lang=csharp */
         const string source = """
-            public sealed class TestClass {}
+            public sealed class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);
@@ -33,12 +33,12 @@ public class TopLevel : AnalyzerVerifier
     {
         /* lang=csharp */
         const string source = """
-            public partial class TestClass {}
+            public partial class Subject {}
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(1, 1, 1, 34)
-            .WithArguments("TestClass");
+            .WithSpan(1, 1, 1, 32)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -48,7 +48,7 @@ public class TopLevel : AnalyzerVerifier
     {
         /* lang=csharp */
         const string source = """
-            public sealed partial class TestClass {}
+            public sealed partial class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);
@@ -59,7 +59,7 @@ public class TopLevel : AnalyzerVerifier
     {
         /* lang=csharp */
         const string source = """
-            public static class TestClass {}
+            public static class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);
@@ -70,7 +70,7 @@ public class TopLevel : AnalyzerVerifier
     {
         /* lang=csharp */
         const string source = """
-            public abstract class TestClass {}
+            public abstract class Subject {}
             """;
 
         return VerifyAnalyzerAsync(source);

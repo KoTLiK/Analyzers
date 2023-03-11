@@ -1,4 +1,4 @@
-namespace Analyzer.SealedKeyword.Tests.Unit.Class;
+namespace Analyzer.SealedKeyword.Tests.Unit.ClassTests;
 
 public sealed class BlockScoped : AnalyzerVerifier
 {
@@ -11,13 +11,13 @@ public sealed class BlockScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}} {
-                public class TestClass {}
+                public class Subject {}
             }
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 5, 2, 30)
-            .WithArguments("TestClass");
+            .WithSpan(2, 5, 2, 28)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -31,7 +31,7 @@ public sealed class BlockScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}} {
-                public sealed class TestClass {}
+                public sealed class Subject {}
             }
             """;
 
@@ -47,13 +47,13 @@ public sealed class BlockScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}} {
-                public partial class TestClass {}
+                public partial class Subject {}
             }
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 5, 2, 38)
-            .WithArguments("TestClass");
+            .WithSpan(2, 5, 2, 36)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -67,7 +67,7 @@ public sealed class BlockScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}} {
-                public sealed partial class TestClass {}
+                public sealed partial class Subject {}
             }
             """;
 
@@ -83,7 +83,7 @@ public sealed class BlockScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}} {
-                public static class TestClass {}
+                public static class Subject {}
             }
             """;
 
@@ -99,7 +99,7 @@ public sealed class BlockScoped : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             namespace {{@namespace}} {
-                public abstract class TestClass {}
+                public abstract class Subject {}
             }
             """;
 

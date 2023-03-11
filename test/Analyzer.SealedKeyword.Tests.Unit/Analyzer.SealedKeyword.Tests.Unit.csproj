@@ -26,4 +26,8 @@
       <ProjectReference Include="..\..\src\Analyzer.SealedKeyword\Analyzer.SealedKeyword.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="RecordTests\" />
+    </ItemGroup>
+
 </Project>

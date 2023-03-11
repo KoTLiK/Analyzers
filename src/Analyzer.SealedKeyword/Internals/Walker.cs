@@ -33,7 +33,7 @@ internal sealed class Walker : CSharpSyntaxWalker
 
     public override void VisitUsingDirective(UsingDirectiveSyntax node)
     {
-        base.VisitUsingDirective(node);
+        var identifiers = node.Name.GetIdentifier().ToArray();
     }
 
     public override void VisitUsingStatement(UsingStatementSyntax node)

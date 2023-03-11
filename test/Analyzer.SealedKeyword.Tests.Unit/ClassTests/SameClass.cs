@@ -1,6 +1,6 @@
-﻿namespace Analyzer.SealedKeyword.Tests.Unit.Class;
+﻿namespace Analyzer.SealedKeyword.Tests.Unit.ClassTests;
 
-public class SameClass : AnalyzerVerifier
+public sealed class SameClass : AnalyzerVerifier
 {
     [Fact]
     public Task SingleSource_OneNonSealed_Then_Warning()
@@ -8,16 +8,16 @@ public class SameClass : AnalyzerVerifier
         /* lang=csharp */
         const string source = """
             namespace Sealed {
-                public sealed class TestClass {}
+                public sealed class Subject {}
             }
             namespace NonSealed {
-                public class TestClass {}
+                public class Subject {}
             }
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(5, 5, 5, 30)
-            .WithArguments("TestClass");
+            .WithSpan(5, 5, 5, 28)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result);
     }
@@ -29,19 +29,19 @@ public class SameClass : AnalyzerVerifier
         {
             /* lang=csharp */"""
             namespace NonSealed {
-                public class TestClass {}
+                public class Subject {}
             }
             """,
             /* lang=csharp */"""
             namespace Sealed {
-                public sealed class TestClass {}
+                public sealed class Subject {}
             }
             """,
         };
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 5, 2, 30)
-            .WithArguments("TestClass");
+            .WithSpan(2, 5, 2, 28)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(sources, result);
     }
@@ -53,17 +53,17 @@ public class SameClass : AnalyzerVerifier
         {
             /* lang=csharp */"""
             namespace NonSealed;
-            public class TestClass {}
+            public class Subject {}
             """,
             /* lang=csharp */"""
             namespace Sealed;
-            public sealed class TestClass {}
+            public sealed class Subject {}
             """,
         };
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 1, 2, 26)
-            .WithArguments("TestClass");
+            .WithSpan(2, 1, 2, 24)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(sources, result);
     }
@@ -74,20 +74,20 @@ public class SameClass : AnalyzerVerifier
         /* lang=csharp */
         const string source = """
             namespace NonSealed1 {
-                public class TestClass {}
+                public class Subject {}
             }
             namespace NonSealed2 {
-                public class TestClass {}
+                public class Subject {}
             }
             """;
 
         var result1 = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 5, 2, 30)
-            .WithArguments("TestClass");
+            .WithSpan(2, 5, 2, 28)
+            .WithArguments("Subject");
 
         var result2 = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(5, 5, 5, 30)
-            .WithArguments("TestClass");
+            .WithSpan(5, 5, 5, 28)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(source, result1, result2);
     }
@@ -99,23 +99,23 @@ public class SameClass : AnalyzerVerifier
         {
             /* lang=csharp */"""
             namespace NonSealed1 {
-                public class TestClass {}
+                public class Subject {}
             }
             """,
             /* lang=csharp */"""
             namespace NonSealed2 {
-                public class TestClass {}
+                public class Subject {}
             }
             """,
         };
 
         var result1 = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 5, 2, 30)
-            .WithArguments("TestClass");
+            .WithSpan(2, 5, 2, 28)
+            .WithArguments("Subject");
 
         var result2 = Diagnostic(Descriptor.SKA0001)
-            .WithSpan("/0/Test1.cs", 2, 5, 2, 30)
-            .WithArguments("TestClass");
+            .WithSpan("/0/Test1.cs", 2, 5, 2, 28)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(sources, result1, result2);
     }
@@ -127,21 +127,21 @@ public class SameClass : AnalyzerVerifier
         {
             /* lang=csharp */"""
             namespace NonSealed1;
-            public class TestClass {}
+            public class Subject {}
             """,
             /* lang=csharp */"""
             namespace NonSealed2;
-            public class TestClass {}
+            public class Subject {}
             """,
         };
 
         var result1 = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 1, 2, 26)
-            .WithArguments("TestClass");
+            .WithSpan(2, 1, 2, 24)
+            .WithArguments("Subject");
 
         var result2 = Diagnostic(Descriptor.SKA0001)
-            .WithSpan("/0/Test1.cs", 2, 1, 2, 26)
-            .WithArguments("TestClass");
+            .WithSpan("/0/Test1.cs", 2, 1, 2, 24)
+            .WithArguments("Subject");
 
         return VerifyAnalyzerAsync(sources, result1, result2);
     }
