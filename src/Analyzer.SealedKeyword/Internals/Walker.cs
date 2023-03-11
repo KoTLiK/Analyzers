@@ -10,8 +10,11 @@ internal sealed class Walker : CSharpSyntaxWalker
     // <Namespace, List<Types>>
     public Dictionary<string, List<string>> Types { get; } = new();
 
-    // <Type, (Namespace|Using|...)>
+    // <Type, (Namespace|Using|...)> - this approach is wrong, but it worked so far
     public Dictionary<string, string> BaseTypes { get; } = new();
+
+    // using Some.Namespace;
+    public HashSet<string> UsingDirectives { get; } = new();
 
     public Walker Visit(SyntaxTree syntaxTree)
     {
@@ -33,12 +36,18 @@ internal sealed class Walker : CSharpSyntaxWalker
 
     public override void VisitUsingDirective(UsingDirectiveSyntax node)
     {
-        var identifiers = node.Name.GetIdentifier().ToArray();
+        var identifier = node.Name.GetIdentifier().Join(".");
+        UsingDirectives.Add(identifier);
     }
 
     public override void VisitUsingStatement(UsingStatementSyntax node)
     {
         base.VisitUsingStatement(node);
+    }
+
+    public Walker CreateUsingConnections()
+    {
+        return this;
     }
 
     private void TryAddBaseType(TypeDeclarationSyntax node)
@@ -59,10 +68,12 @@ internal sealed class Walker : CSharpSyntaxWalker
 
         if (identifiers.Length == 1)
         {
+            // SyntaxTree namespace or toplevel
             valueOrAdd = baseType.GetNamespaceName();
             return;
         }
 
+        // length 1 => name of the Type, cannot use as fully qualified namespace to the type
         valueOrAdd = identifiers[..^1].Join(".");
     }
 
