@@ -1,58 +1,9 @@
 ﻿namespace Analyzer.SealedKeyword.Tests.Unit.Class;
 
-public class ClassTests : AnalyzerVerifier
+public class SimpleTests : AnalyzerVerifier
 {
-    [Theory]
-    [InlineData("Space")]
-    [InlineData("Custom.Space")]
-    [InlineData("Longer.Custom.Space")]
-    public Task Simple_Sealed_Then_Ok(string @namespace)
-    {
-        /* lang=csharp */
-        var source = $$"""
-            namespace {{@namespace}};
-            public sealed class TestClass {}
-            """;
-
-        return VerifyAnalyzerAsync(source);
-    }
-
-    [Theory]
-    [InlineData("Space")]
-    [InlineData("Custom.Space")]
-    [InlineData("Longer.Custom.Space")]
-    public Task Simple_NonSealed_Then_Warning(string @namespace)
-    {
-        /* lang=csharp */
-        var source = $$"""
-            namespace {{@namespace}};
-            public class TestClass {}
-            """;
-
-        var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(2, 1, 2, 26)
-            .WithArguments("TestClass");
-
-        return VerifyAnalyzerAsync(source, result);
-    }
-
     [Fact]
-    public Task TopLevel_NonSealed_Then_Warning()
-    {
-        /* lang=csharp */
-        const string source = """
-            public class TestClass {}
-            """;
-
-        var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(1, 1, 1, 26)
-            .WithArguments("TestClass");
-
-        return VerifyAnalyzerAsync(source, result);
-    }
-
-    [Fact]
-    public Task SingleSource_DifferentNamespace_SameClass_OneIsNonSealed_Then_Warning()
+    public Task SingleSource_SameClass_OneIsNonSealed_Then_Warning()
     {
         /* lang=csharp */
         const string source = """
@@ -72,7 +23,7 @@ public class ClassTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task SingleSource_DifferentNamespace_SameClass_NonSealed_Then_Warning()
+    public Task SingleSource_SameClass_NonSealed_Then_Warning()
     {
         /* lang=csharp */
         const string source = """
@@ -96,7 +47,7 @@ public class ClassTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task MultiSource_DifferentNamespace_SameClass_OneIsNonSealed_Then_Warning()
+    public Task MultiSource_SameClass_OneIsNonSealed_Then_Warning()
     {
         var sources = new []
         {
@@ -120,7 +71,7 @@ public class ClassTests : AnalyzerVerifier
     }
 
     [Fact]
-    public Task MultiSource_DifferentNamespace_SameClass_NonSealed_Then_Warning()
+    public Task MultiSource_SameClass_NonSealed_Then_Warning()
     {
         var sources = new []
         {

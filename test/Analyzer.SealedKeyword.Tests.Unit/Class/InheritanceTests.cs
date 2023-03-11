@@ -1,6 +1,6 @@
 ﻿namespace Analyzer.SealedKeyword.Tests.Unit.Class;
 
-public class ClassInheritanceTests : AnalyzerVerifier
+public class InheritanceTests : AnalyzerVerifier
 {
     [Fact]
     public Task TopLevel_Then_Info()
@@ -42,7 +42,7 @@ public class ClassInheritanceTests : AnalyzerVerifier
     [InlineData("Space")]
     [InlineData("Custom.Space")]
     [InlineData("Longer.Custom.Space")]
-    public Task SingleSource_DifferentNamespace_QualifiedInheritance_Then_Info(string @namespace)
+    public Task SingleSource_BlockScoped_Qualified_Then_Info(string @namespace)
     {
         /* lang=csharp */
         var source = $$"""
@@ -65,7 +65,7 @@ public class ClassInheritanceTests : AnalyzerVerifier
     [InlineData("Space")]
     [InlineData("Custom.Space")]
     [InlineData("Longer.Custom.Space")]
-    public Task MultiSource_DifferentNamespace_QualifiedInheritance_Then_Info(string @namespace)
+    public Task MultiSource_BlockScoped_Qualified_Then_Info(string @namespace)
     {
         var sources = new []
         {
@@ -86,5 +86,29 @@ public class ClassInheritanceTests : AnalyzerVerifier
             .WithArguments("TestClass");
 
         return VerifyAnalyzerAsync(sources, result);
+    }
+
+    [Theory]
+    [InlineData("Space")]
+    [InlineData("Custom.Space")]
+    [InlineData("Longer.Custom.Space")]
+    public Task SingleSource_BlockScoped_UsingDirective_Then_Info(string @namespace)
+    {
+        /* lang=csharp */
+        var source = $$"""
+            namespace Sealed {
+                using {{@namespace}};
+                public sealed class Sealed : TestClass {}
+            }
+            namespace {{@namespace}} {
+                public class TestClass {}
+            }
+            """;
+
+        var result = Diagnostic(Descriptor.SKA0003)
+            .WithSpan(6, 5, 6, 30)
+            .WithArguments("TestClass");
+
+        return VerifyAnalyzerAsync(source, result);
     }
 }

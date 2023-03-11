@@ -31,6 +31,16 @@ internal sealed class Walker : CSharpSyntaxWalker
         TryAddBaseType(node);
     }
 
+    public override void VisitUsingDirective(UsingDirectiveSyntax node)
+    {
+        base.VisitUsingDirective(node);
+    }
+
+    public override void VisitUsingStatement(UsingStatementSyntax node)
+    {
+        base.VisitUsingStatement(node);
+    }
+
     private void TryAddBaseType(TypeDeclarationSyntax node)
     {
         if (node.BaseList?.Types.FirstOrDefault()?.Type is not { } baseType)
