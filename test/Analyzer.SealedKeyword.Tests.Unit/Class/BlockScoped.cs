@@ -10,14 +10,13 @@ public sealed class BlockScoped : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace {{@namespace}}
-            {
+            namespace {{@namespace}} {
                 public class TestClass {}
             }
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(3, 5, 3, 30)
+            .WithSpan(2, 5, 2, 30)
             .WithArguments("TestClass");
 
         return VerifyAnalyzerAsync(source, result);
@@ -31,8 +30,7 @@ public sealed class BlockScoped : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace {{@namespace}}
-            {
+            namespace {{@namespace}} {
                 public sealed class TestClass {}
             }
             """;
@@ -48,14 +46,13 @@ public sealed class BlockScoped : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace {{@namespace}}
-            {
+            namespace {{@namespace}} {
                 public partial class TestClass {}
             }
             """;
 
         var result = Diagnostic(Descriptor.SKA0001)
-            .WithSpan(3, 5, 3, 38)
+            .WithSpan(2, 5, 2, 38)
             .WithArguments("TestClass");
 
         return VerifyAnalyzerAsync(source, result);
@@ -69,8 +66,7 @@ public sealed class BlockScoped : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace {{@namespace}}
-            {
+            namespace {{@namespace}} {
                 public sealed partial class TestClass {}
             }
             """;
@@ -86,8 +82,7 @@ public sealed class BlockScoped : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace {{@namespace}}
-            {
+            namespace {{@namespace}} {
                 public static class TestClass {}
             }
             """;
@@ -103,8 +98,7 @@ public sealed class BlockScoped : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace {{@namespace}}
-            {
+            namespace {{@namespace}} {
                 public abstract class TestClass {}
             }
             """;
