@@ -1,0 +1,73 @@
+﻿using System.Runtime.InteropServices;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace Analyzer.SealedKeyword.Internals;
+
+internal sealed class Walker : CSharpSyntaxWalker
+{
+    // <Namespace, List<Types>>
+    public Dictionary<string, List<string>> Types { get; } = new();
+
+    // <Type, (Namespace|Using|...)>
+    public Dictionary<string, string> BaseTypes { get; } = new();
+
+    public Walker Visit(SyntaxTree syntaxTree)
+    {
+        Visit(syntaxTree.GetRoot());
+        return this;
+    }
+
+    public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+    {
+        AddVisitedNodeType(node);
+        TryAddBaseType(node);
+    }
+
+    public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
+    {
+        AddVisitedNodeType(node);
+        TryAddBaseType(node);
+    }
+
+    private void TryAddBaseType(TypeDeclarationSyntax node)
+    {
+        if (node.BaseList?.Types.FirstOrDefault()?.Type is not { } baseType)
+        {
+            return;
+        }
+
+        var identifiers = baseType.GetIdentifier().ToArray();
+        var identifier = identifiers.Last();
+
+        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseTypes, identifier, out var exists);
+        if (exists)
+        {
+            return;
+        }
+
+        if (identifiers.Length == 1)
+        {
+            valueOrAdd = baseType.GetNamespaceName();
+            return;
+        }
+
+        valueOrAdd = identifiers[..^1].Join(".");
+    }
+
+    private void AddVisitedNodeType(TypeDeclarationSyntax node)
+    {
+        var nodeNamespace = node.GetNamespaceName();
+        var nodeName = node.Identifier.Text;
+
+        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(Types, nodeNamespace, out var exists);
+        if (exists)
+        {
+            valueOrAdd!.Add(nodeName);
+            return;
+        }
+
+        valueOrAdd = new List<string> { nodeName };
+    }
+}

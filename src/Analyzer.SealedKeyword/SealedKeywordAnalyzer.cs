@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Runtime.InteropServices;
 using Analyzer.SealedKeyword.Internals;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -62,122 +61,27 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var type = ctx.SemanticModel.GetDeclaredSymbol(node);
-        if (type is null)
+        if (ctx.SemanticModel.GetDeclaredSymbol(node) is not { } type)
         {
             return;
         }
 
-        if (type.IsSealed || type.IsAbstract || type.IsStatic)
+        if (type.IsSealed || type.IsStatic || type.IsAbstract )
         {
             return;
         }
 
-        if (baseTypes.TryGetValue(nodeName, out var baseNamespace)
-            && baseNamespace == nodeNamespace)
-        {
-            var infoDescriptor = type.IsRecord ? Descriptor.SKA0004 : Descriptor.SKA0003;
-            ctx.ReportDiagnostic(Diagnostic.Create(infoDescriptor, node.GetLocation(), nodeName));
-            return;
-        }
-
-        var warnDescriptor = type.IsRecord ? Descriptor.SKA0002 : Descriptor.SKA0001;
-        ctx.ReportDiagnostic(Diagnostic.Create(warnDescriptor, node.GetLocation(), nodeName));
-    }
-}
-
-public sealed class Walker : CSharpSyntaxWalker
-{
-    // <Namespace, List<Types>>
-    public Dictionary<string, List<string>> Types { get; } = new();
-
-    // <Type, (Namespace|Using|...)>
-    public Dictionary<string, string> BaseTypes { get; } = new();
-
-    public Walker Visit(SyntaxTree syntaxTree)
-    {
-        Visit(syntaxTree.GetRoot());
-        return this;
+        var isBaseType = baseTypes.TryGetValue(nodeName, out var baseNamespace) && baseNamespace == nodeNamespace;
+        var descriptor = GetDescriptor(isBaseType, type.IsRecord);
+        ctx.ReportDiagnostic(Diagnostic.Create(descriptor, node.GetLocation(), nodeName));
     }
 
-    public override void VisitClassDeclaration(ClassDeclarationSyntax node)
-    {
-        AddVisitedNodeType(node);
-        TryAddBaseType(node);
-    }
-
-    public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
-    {
-        AddVisitedNodeType(node);
-        TryAddBaseType(node);
-    }
-
-    private void TryAddBaseType(TypeDeclarationSyntax node)
-    {
-        if (node.BaseList?.Types.FirstOrDefault()?.Type is not { } baseType)
+    private static DiagnosticDescriptor GetDescriptor(bool isBaseType, bool isRecord)
+        => (isBaseType, isRecord) switch
         {
-            return;
-        }
-
-        var identifiers = baseType.GetIdentifier().ToArray();
-        var identifier = identifiers.Last();
-
-        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseTypes, identifier, out var exists);
-        if (exists)
-        {
-            return;
-        }
-
-        if (identifiers.Length == 1)
-        {
-            valueOrAdd = baseType.GetNamespaceName();
-            return;
-        }
-
-        valueOrAdd = identifiers[..^1].Join(".");
-    }
-
-    private void AddVisitedNodeType(TypeDeclarationSyntax node)
-    {
-        var nodeNamespace = node.GetNamespaceName();
-        var nodeName = node.Identifier.Text;
-
-        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(Types, nodeNamespace, out var exists);
-        if (exists)
-        {
-            valueOrAdd!.Add(nodeName);
-            return;
-        }
-
-        valueOrAdd = new List<string> { nodeName };
-    }
-}
-
-public static class AnalyzerExtensions
-{
-    public const string TopLevelNamespaceWildcard = "<top-level-namespace>";
-
-    public static string GetNamespaceName(this SyntaxNode typeDeclaration)
-    {
-        var @namespace = typeDeclaration.FirstAncestorOrSelf<BaseNamespaceDeclarationSyntax>();
-        return @namespace?.Name.GetIdentifier().Join(".") ?? TopLevelNamespaceWildcard;
-    }
-
-    public static IEnumerable<string> GetIdentifier(this TypeSyntax? typeSyntax)
-    {
-        static IEnumerable<string> SingleIdentifier(SimpleNameSyntax identifier)
-        {
-            yield return identifier.Identifier.Text;
-        }
-
-        return typeSyntax switch
-        {
-            IdentifierNameSyntax identifier => SingleIdentifier(identifier),
-            QualifiedNameSyntax qualifier => qualifier.Left.GetIdentifier().Concat(qualifier.Right.GetIdentifier()),
-            _ => Enumerable.Empty<string>()
+            (true, true) => Descriptor.SKA0004,
+            (true, false) => Descriptor.SKA0003,
+            (false, true) => Descriptor.SKA0002,
+            (false, false) => Descriptor.SKA0001,
         };
-    }
-
-    public static string Join(this IEnumerable<string> source, string separator)
-        => string.Join(separator, source);
 }
