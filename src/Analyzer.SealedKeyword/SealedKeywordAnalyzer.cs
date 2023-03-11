@@ -77,14 +77,12 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
             && baseNamespace == nodeNamespace)
         {
             var infoDescriptor = type.IsRecord ? Descriptor.SKA0004 : Descriptor.SKA0003;
-            var infoDiagnostic = Diagnostic.Create(infoDescriptor, node.GetLocation(), nodeName);
-            ctx.ReportDiagnostic(infoDiagnostic);
+            ctx.ReportDiagnostic(Diagnostic.Create(infoDescriptor, node.GetLocation(), nodeName));
             return;
         }
 
         var warnDescriptor = type.IsRecord ? Descriptor.SKA0002 : Descriptor.SKA0001;
-        var warnDiagnostic = Diagnostic.Create(warnDescriptor, node.GetLocation(), nodeName);
-        ctx.ReportDiagnostic(warnDiagnostic);
+        ctx.ReportDiagnostic(Diagnostic.Create(warnDescriptor, node.GetLocation(), nodeName));
     }
 }
 
@@ -103,6 +101,12 @@ public sealed class Walker : CSharpSyntaxWalker
     }
 
     public override void VisitClassDeclaration(ClassDeclarationSyntax node)
+    {
+        AddVisitedNodeType(node);
+        TryAddBaseType(node);
+    }
+
+    public override void VisitRecordDeclaration(RecordDeclarationSyntax node)
     {
         AddVisitedNodeType(node);
         TryAddBaseType(node);

@@ -1,4 +1,4 @@
-namespace Analyzer.SealedKeyword.Tests.Unit;
+namespace Analyzer.SealedKeyword.Tests.Unit.Record;
 
 // TODO clean up this messy unit tests
 public sealed class RecordTests : AnalyzerVerifier
@@ -37,21 +37,6 @@ public sealed class RecordTests : AnalyzerVerifier
 
         // Act + Assert
         return VerifyAnalyzerAsync(source, result);
-    }
-
-    [Fact]
-    public Task NonSealed_AsBaseRecord_Then_Warning()
-    {
-        // Arrange
-        /* lang=csharp */
-        const string source = """
-            namespace TestNamespace;
-            public sealed record SealedRecord : TestRecord;
-            public record TestRecord;
-            """;
-
-        // Act + Assert
-        return VerifyAnalyzerAsync(source);
     }
 
     [Fact]

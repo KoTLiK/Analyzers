@@ -1,4 +1,4 @@
-﻿namespace Analyzer.SealedKeyword.Tests.Unit;
+﻿namespace Analyzer.SealedKeyword.Tests.Unit.Class;
 
 public class ClassInheritanceTests : AnalyzerVerifier
 {
