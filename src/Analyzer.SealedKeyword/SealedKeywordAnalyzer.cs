@@ -28,7 +28,6 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
     {
         var walkers = context.Compilation.SyntaxTrees
             .Select(tree => new Walker().Visit(tree))
-            .Select(walker => walker.CreateUsingConnections())
             .ToArray();
 
         var types = walkers

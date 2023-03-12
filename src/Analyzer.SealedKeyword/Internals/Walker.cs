@@ -16,6 +16,10 @@ internal sealed class Walker : CSharpSyntaxWalker
     // using Some.Namespace;
     public HashSet<string> UsingDirectives { get; } = new();
 
+    /*
+     * Pre kazdy using z walkera, najdi namespace zo VSETKYCH typov a spojim si base type zo vsetkych typov.
+     * Rozbije to top-level? Pre walkera upravim vytahovanie namespace?
+     */
     public Walker Visit(SyntaxTree syntaxTree)
     {
         Visit(syntaxTree.GetRoot());
@@ -43,11 +47,6 @@ internal sealed class Walker : CSharpSyntaxWalker
     public override void VisitUsingStatement(UsingStatementSyntax node)
     {
         base.VisitUsingStatement(node);
-    }
-
-    public Walker CreateUsingConnections()
-    {
-        return this;
     }
 
     private void TryAddBaseType(TypeDeclarationSyntax node)
