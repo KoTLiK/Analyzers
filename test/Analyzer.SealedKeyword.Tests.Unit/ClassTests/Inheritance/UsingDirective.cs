@@ -10,7 +10,7 @@ public sealed class UsingDirective : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace Sealed {
+            namespace SealedSpace {
                 using {{@namespace}};
                 public sealed class Sealed : Subject {}
             }
@@ -35,7 +35,7 @@ public sealed class UsingDirective : AnalyzerVerifier
         /* lang=csharp */
         var source = $$"""
             using {{@namespace}};
-            namespace Sealed {
+            namespace SealedSpace {
                 public sealed class Sealed : Subject {}
             }
             namespace {{@namespace}} {

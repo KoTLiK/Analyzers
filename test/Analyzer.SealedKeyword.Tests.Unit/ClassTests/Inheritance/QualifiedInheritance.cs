@@ -46,7 +46,7 @@ public sealed class QualifiedInheritance : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace Sealed {
+            namespace SealedSpace {
                 public sealed class Sealed : {{@namespace}}.Subject {}
             }
             namespace {{@namespace}} {
@@ -70,7 +70,7 @@ public sealed class QualifiedInheritance : AnalyzerVerifier
         var sources = new []
         {
             /* lang=csharp */$$"""
-            namespace Sealed {
+            namespace SealedSpace {
                 public sealed class Sealed : {{@namespace}}.Subject {}
             }
             """,

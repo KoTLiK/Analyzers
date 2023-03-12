@@ -10,7 +10,7 @@ public sealed class UsingDirective : AnalyzerVerifier
     {
         /* lang=csharp */
         var source = $$"""
-            namespace Sealed {
+            namespace SealedSpace {
                 using {{@namespace}};
                 public sealed record Sealed : Subject {}
             }
