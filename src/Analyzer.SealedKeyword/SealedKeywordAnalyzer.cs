@@ -30,13 +30,37 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
             .Select(tree => new Walker().Visit(tree))
             .ToArray();
 
-        var types = walkers
+        var allTypes = walkers
             .SelectMany(w => w.Types)
             .GroupBy(pair => pair.Key)
             .ToDictionary(
                 group => group.Key,
                 group => group.SelectMany(g => g.Value).ToHashSet());
 
+        // TODO this foreach is not OK
+        foreach (var walker in walkers)
+        {
+            foreach (var (space, alias) in walker.UsingDirectives)
+            {
+                if (alias is not null)
+                {
+                    // Handle Alias
+                    continue;
+                }
+
+                if (!allTypes.TryGetValue(space, out var types))
+                {
+                    continue;
+                }
+
+                foreach (var type in types.Where(type => walker.BaseTypes.ContainsKey(type)))
+                {
+                    walker.BaseTypes.Add(type, space);
+                }
+            }
+        }
+
+        // TODO Do i need is this way?
         var baseTypes = walkers
             .SelectMany(w => w.BaseTypes)
             .GroupBy(pair => pair.Key)
@@ -44,8 +68,8 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
                 group => group.Key,
                 group => group.Select(g => g.Value).ToHashSet().SingleOrDefault());
 
-        context.RegisterSyntaxNodeAction(ctx => TypeDeclaration(ctx, types, baseTypes), SyntaxKind.ClassDeclaration);
-        context.RegisterSyntaxNodeAction(ctx => TypeDeclaration(ctx, types, baseTypes), SyntaxKind.RecordDeclaration);
+        context.RegisterSyntaxNodeAction(ctx => TypeDeclaration(ctx, allTypes, baseTypes), SyntaxKind.ClassDeclaration);
+        context.RegisterSyntaxNodeAction(ctx => TypeDeclaration(ctx, allTypes, baseTypes), SyntaxKind.RecordDeclaration);
     }
 
     private static void TypeDeclaration(SyntaxNodeAnalysisContext ctx,
@@ -71,7 +95,8 @@ public sealed class SealedKeywordAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var isBaseType = baseTypes.TryGetValue(nodeName, out var baseNamespace) && baseNamespace == nodeNamespace;
+        var isBaseType = baseTypes.TryGetValue(nodeName, out var baseNamespace)
+                         && baseNamespace == nodeNamespace;
         var descriptor = GetDescriptor(isBaseType, type.IsRecord);
         ctx.ReportDiagnostic(Diagnostic.Create(descriptor, node.GetLocation(), nodeName));
     }

@@ -10,11 +10,11 @@ internal sealed class Walker : CSharpSyntaxWalker
     // <Namespace, List<Types>>
     public Dictionary<string, List<string>> Types { get; } = new();
 
-    // <Type, (Namespace|Using|...)> - this approach is wrong, but it worked so far
-    public Dictionary<string, string> BaseTypes { get; } = new();
+    // <(Type|TypeAlias), (Namespace|Alias|null)> - null => The same namespace as visited syntax tree or top-level
+    public Dictionary<string, string?> BaseTypes { get; } = new();
 
-    // using Some.Namespace;
-    public HashSet<string> UsingDirectives { get; } = new();
+    // <Using, (Alias|null)>
+    public Dictionary<string, string?> UsingDirectives { get; } = new();
 
     /*
      * Pre kazdy using z walkera, najdi namespace zo VSETKYCH typov a spojim si base type zo vsetkych typov.
@@ -40,40 +40,19 @@ internal sealed class Walker : CSharpSyntaxWalker
 
     public override void VisitUsingDirective(UsingDirectiveSyntax node)
     {
+        // using Custom.Namespace;
+        // using Alias = Custom.Namespace;
+        // using TypeAlias = Custom.Namespace.Type;
+        // TODO may work only for first type so far
         var identifier = node.Name.GetIdentifier().Join(".");
-        UsingDirectives.Add(identifier);
-    }
 
-    public override void VisitUsingStatement(UsingStatementSyntax node)
-    {
-        base.VisitUsingStatement(node);
-    }
-
-    private void TryAddBaseType(TypeDeclarationSyntax node)
-    {
-        if (node.BaseList?.Types.FirstOrDefault()?.Type is not { } baseType)
-        {
-            return;
-        }
-
-        var identifiers = baseType.GetIdentifier().ToArray();
-        var identifier = identifiers.Last();
-
-        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseTypes, identifier, out var exists);
+        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(UsingDirectives, identifier, out var exists);
         if (exists)
         {
             return;
         }
 
-        if (identifiers.Length == 1)
-        {
-            // SyntaxTree namespace or toplevel
-            valueOrAdd = baseType.GetNamespaceName();
-            return;
-        }
-
-        // length 1 => name of the Type, cannot use as fully qualified namespace to the type
-        valueOrAdd = identifiers[..^1].Join(".");
+        valueOrAdd = node.Alias?.Name.Identifier.Text;
     }
 
     private void AddVisitedNodeType(TypeDeclarationSyntax node)
@@ -89,5 +68,25 @@ internal sealed class Walker : CSharpSyntaxWalker
         }
 
         valueOrAdd = new List<string> { nodeName };
+    }
+
+    private void TryAddBaseType(TypeDeclarationSyntax node)
+    {
+        if (node.BaseList?.Types.FirstOrDefault()?.Type is not { } baseType)
+        {
+            return;
+        }
+
+        var identifiers = baseType.GetIdentifier().ToArray();
+        var identifier = identifiers.Last();
+
+        ref var valueOrAdd = ref CollectionsMarshal.GetValueRefOrAddDefault(BaseTypes, identifier, out var exists);
+        if (exists || identifiers.Length == 1)
+        {
+            return;
+        }
+
+        // length 1 => name of the Type, cannot use as fully qualified namespace to the type
+        valueOrAdd = identifiers[..^1].Join(".");
     }
 }
