@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A9ACF9DB-B4C5-4D61-B8F9-6356C2547080}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{610B2E02-403E-4DF8-87B9-4164DC55FB59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.SealedKeyword", "src\Analyzer.SealedKeyword\Analyzer.SealedKeyword.csproj", "{2ABE2B41-F084-4FD8-B679-33765D543215}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Analyzer.SealedKeyword.Tests.Unit", "test\Analyzer.SealedKeyword.Tests.Unit\Analyzer.SealedKeyword.Tests.Unit.csproj", "{77CD73A6-F29F-472B-ACD9-0B3D3CDA4480}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2ABE2B41-F084-4FD8-B679-33765D543215} = {A9ACF9DB-B4C5-4D61-B8F9-6356C2547080}
+		{77CD73A6-F29F-472B-ACD9-0B3D3CDA4480} = {610B2E02-403E-4DF8-87B9-4164DC55FB59}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2ABE2B41-F084-4FD8-B679-33765D543215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ABE2B41-F084-4FD8-B679-33765D543215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ABE2B41-F084-4FD8-B679-33765D543215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ABE2B41-F084-4FD8-B679-33765D543215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77CD73A6-F29F-472B-ACD9-0B3D3CDA4480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77CD73A6-F29F-472B-ACD9-0B3D3CDA4480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77CD73A6-F29F-472B-ACD9-0B3D3CDA4480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77CD73A6-F29F-472B-ACD9-0B3D3CDA4480}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
