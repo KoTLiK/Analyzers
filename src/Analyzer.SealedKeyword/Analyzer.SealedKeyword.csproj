@@ -47,8 +47,4 @@
         </AssemblyAttribute>
     </ItemGroup>
 
-    <ItemGroup>
-      <AdditionalFiles Include="AnalyzerReleases.Unshipped_withWalker.md" />
-    </ItemGroup>
-
 </Project>
